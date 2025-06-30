@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Descargar Reel</title>
+</head>
+<body>
+  <h2>Descargar Reel de Instagram</h2>
+  <input type="text" id="url" placeholder="Pega el enlace del Reel" />
+  <button onclick="getReel()">Obtener Video</button>
+  <div id="result"></div>
+
+  <script>
+    async function getReel() {
+      const url = document.getElementById('url').value;
+      const result = document.getElementById('result');
+      result.innerHTML = '⏳ Cargando...';
+
+      try {
+        const res = await fetch(`/api/instagram?url=${encodeURIComponent(url)}`);
+        const data = await res.json();
+
+        if (data.error) {
+          result.innerHTML = `<p style="color:red;">❌ ${data.error}</p>`;
+          return;
+        }
+
+        const video = data.video;
+        result.innerHTML = `
+          <video controls autoplay style="max-width: 90vw;">
+            <source src="/proxy/video?url=${encodeURIComponent(video)}" type="video/mp4" />
+
+            Tu navegador no soporta video.
+          </video>
+          <br>
+          <a href="${video}" class="btn" download>⬇ Descargar</a>
+        `;
+      } catch (err) {
+        console.error(err);
+        result.innerHTML = '❌ Error inesperado';
+      }
+    }
+  </script>
+</body>
+</html>
